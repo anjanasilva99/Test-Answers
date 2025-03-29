@@ -1,4 +1,5 @@
 function objectProjection(source, prototype) {
+
     // Handle null or undefined inputs
     if (source === null || source === undefined) return {};
     if (prototype === null || prototype === undefined) return {};

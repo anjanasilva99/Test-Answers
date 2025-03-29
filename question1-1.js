@@ -1,4 +1,5 @@
 Date.prototype.daysTo = function (date) {
+
     // Validate input date
     if(!(date instanceof Date)) {
         throw new TypeError('Invalid input date (Argument must be a Date object)');
@@ -15,6 +16,7 @@ Date.prototype.daysTo = function (date) {
     // Calculate difference in days
     return Math.floor(differenceMs / millisecondsPerDay);
 };
+
 
 
 const startDate = new Date('2024-12-25');

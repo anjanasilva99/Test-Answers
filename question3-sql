@@ -21,13 +21,11 @@ INSERT INTO user (id, firstName, lastName, email, cultureID, deleted, country, i
 (6, 'Joe', 'Dou', 'joe@gmail.com', 1032, 0, 'US', 1, '2009-01-01'),
 (7, 'Marko', 'Polo', 'marko@gmail.com', 1033, 1, 'UA', 1, '2015-07-03');
 
-
 CREATE TABLE [group] (
     id INT PRIMARY KEY,
     name VARCHAR(255),
     created DATETIME
 );
-
 
 INSERT INTO [group] (id, name, created) VALUES 
 (10, 'Support', '2010-02-02'),

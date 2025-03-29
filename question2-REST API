@@ -79,7 +79,9 @@ async function usage() {
         }
     };
 
+
     const calendarInterface = new CalendarBusyIntervals(credentials);
+
 
     const timeMin = new Date('2024-01-01T00:00:00Z');  // Time range
     const timeMax = new Date('2024-01-31T23:59:59Z');

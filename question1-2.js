@@ -8,7 +8,6 @@ function orderSalesByTotal(sales) {
         .sort((a, b) => b.Total - a.Total); // Sort by total in descending order
 }
 
-
 const salesData = [
     { amount: 10000, quantity: 10 },
     { amount: 5000, quantity: 25 },
@@ -20,4 +19,3 @@ const orderedSales = orderSalesByTotal(salesData);
 console.log(orderedSales);
 // Original array remains unchanged
 console.log(salesData);
-
