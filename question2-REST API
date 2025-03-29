@@ -1,0 +1,106 @@
+const { google } = require('googleapis');
+const { OAuth2Client } = require('google-auth-library');
+
+class CalendarBusyIntervals {
+    constructor(credentials) {
+        this.oauth2Client = new OAuth2Client(
+            credentials.client_id,
+            credentials.client_secret,
+            credentials.redirect_uris[0]
+        );
+        
+        this.oauth2Client.setCredentials(credentials.token);
+    }
+
+    async getBusyIntervals(calendarId, timeMin, timeMax) {
+        try {
+            const calendar = google.calendar({ version: 'v3', auth: this.oauth2Client }); // Create new Google Calendar service
+
+            const request = {
+                requestBody: {
+                    timeMin: timeMin.toISOString(),
+                    timeMax: timeMax.toISOString(),
+                    timeZone: 'UTC',
+                    items: [{ id: calendarId }]
+                }
+            };
+            const response = await calendar.freebusy.query(request);  // Fetch free/busy information
+            
+            const busyIntervals = response.data.calendars[calendarId].busy || [];
+
+            return busyIntervals.map(interval => ({
+                start: new Date(interval.start),
+                end: new Date(interval.end)
+            }));
+        } catch (error) {
+            console.error('Error retrieving busy intervals:', error);
+            throw error;
+        }
+    }
+
+    async getFreeIntervals(calendarId, timeMin, timeMax) {    // method to get free intervals
+        const busyIntervals = await this.getBusyIntervals(calendarId, timeMin, timeMax);
+        const freeIntervals = [];
+
+        let currentStart = timeMin;
+
+        busyIntervals.forEach(busyInterval => {         // Find free intervals between busy slots
+
+            if (currentStart < busyInterval.start) {
+                freeIntervals.push({
+                    start: currentStart,
+                    end: busyInterval.start
+                });
+            }
+
+            currentStart = busyInterval.end;
+        });
+
+        if (currentStart < timeMax) {
+            freeIntervals.push({
+                start: currentStart,
+                end: timeMax
+            });
+        }
+
+        return freeIntervals;
+    }
+}
+
+async function usage() {
+
+    const credentials = {
+        client_id: 'client_id',          // need to replace actual values token values
+        client_secret: 'client_secret',  // need to replace actual values token values
+        redirect_uris: ['redirect_url'],  // need to replace actual values token values
+        token: {
+            access_token: 'access_token',   // need to replace actual values token values
+            refresh_token: 'refresh_token',  // need to replace actual values token values
+        }
+    };
+
+    const calendarInterface = new CalendarBusyIntervals(credentials);
+
+    const timeMin = new Date('2024-01-01T00:00:00Z');  // Time range
+    const timeMax = new Date('2024-01-31T23:59:59Z');
+    const calendarId = 'primary'; // Add calender ID here 
+
+    try {
+        const busyIntervals = await calendarInterface.getBusyIntervals(      // Get busy intervals
+            calendarId, 
+            timeMin, 
+            timeMax
+        );
+
+        const freeIntervals = await calendarInterface.getFreeIntervals(      // Get free intervals
+            calendarId, 
+            timeMin, 
+            timeMax
+        );
+
+        console.log('Busy Intervals:', busyIntervals);
+        console.log('Free Intervals:', freeIntervals);
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
